@@ -8,14 +8,15 @@ const PORT = 3000; // port constant
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// We need to configure each route with directions
-// for our HTTP requests
+// configure each route with directions for HTTP requests
+
+// handle get requests 
 app.get('/', function(req, res){
     // route to send index.html file via path 
     res.sendFile(__dirname + '/index.html');
 });
 
-// 
+// handle post requests
 app.post('/users', (req, res) => {
     console.log(req.body);
 });
