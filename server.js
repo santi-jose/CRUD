@@ -1,6 +1,7 @@
 // global variables 
 const express = require('express'); // require express module
 const bodyParser = require('body-parser'); // require body-parser module
+const MongoClient = require('mongodb').MongoClient;
 const app = express(); // create an express application
 const PORT = 3000; // port constant
 
