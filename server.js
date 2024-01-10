@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 // We need to configure each route with directions
 // for our HTTP requests
 app.get('/', function(req, res){
-    // route to send index.html via path 
+    // route to send index.html file via path 
     res.sendFile(__dirname + '/index.html');
 });
 
