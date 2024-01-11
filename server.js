@@ -15,28 +15,28 @@ app.use(bodyParser.json());
 
 // connect to database
 MongoClient.connect(process.env.MONGO_URI)
-    .then(client => {
-        const db = client.db('practice');
-        const usersCollection = db.collection('users');
+    .then(client => { // connect to MongoClient
+        const db = client.db('practice'); // create db practice
+        const usersCollection = db.collection('users'); // create collection of users
 
-        //
+        // handle get request at root 
         app.get('/', (req, res) => {
             usersCollection
-                .find()
-                .toArray()
-                .then(results => {
-                    res.render('index.ejs', {usersCollection: results})
-                })
+                .find() // get cursor to iterate through collection
+                .toArray() // returns an array of documents of collection
+                .then(results => { // when resolved render index.ejs with results as userCollections
+                    res.render('index.ejs', {usersCollection: results});
+                }) // error handling
                 .catch(error => console.error(error));
-        })
+        });
 
-        // handle post requests
+        // handle post requests at 'users'
         app.post('/users', (req, res) => {
             usersCollection
-                .insertOne(req.body)
-                .then(result => {
+                .insertOne(req.body) // insert the request body into collection
+                .then(result => { // if inser successful redirect to root
                     res.redirect('/');
-                })
+                }) // error handling
                 .catch(error => console.log(error));
         });
     })
