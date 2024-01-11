@@ -4,26 +4,45 @@ const bodyParser = require('body-parser'); // require body-parser module
 const MongoClient = require('mongodb').MongoClient;
 const app = express(); // create an express application
 const PORT = 3000; // port constant
+require('dotenv').config({ path: '.env' }); // import dotenv library and configure path
 
-// set app to use body-parser for HTTP requests
-app.use(bodyParser.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');  // set app to use ejs
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true })); // set app to use body-parser for HTTP requests
 app.use(bodyParser.json());
 
 // configure each route with directions for HTTP requests
 
-// handle get requests 
-app.get('/', function(req, res){
-    // route to send index.html file via path 
-    res.sendFile(__dirname + '/index.html');
-});
+// connect to database
+MongoClient.connect(process.env.MONGO_URI)
+    .then(client => {
+        const db = client.db('practice');
+        const usersCollection = db.collection('users');
 
-// handle post requests
-app.post('/users', (req, res) => {
-    console.log(req.body);
-});
+        //
+        app.get('/', (req, res) => {
+            usersCollection
+                .find()
+                .toArray()
+                .then(results => {
+                    res.render('index.ejs', {usersCollection: results})
+                })
+                .catch(error => console.error(error));
+        })
 
+        // handle post requests
+        app.post('/users', (req, res) => {
+            usersCollection
+                .insertOne(req.body)
+                .then(result => {
+                    res.redirect('/');
+                })
+                .catch(error => console.log(error));
+        });
+    })
+    .catch(error => console.error(error));
 
 // listen for connection to port 3000
-app.listen(PORT, function(){
+app.listen(PORT, function () {
     console.log(`Server is live! Listening at port ${PORT}`);
 });
