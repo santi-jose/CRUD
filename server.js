@@ -5,13 +5,41 @@ const MongoClient = require('mongodb').MongoClient;
 const app = express(); // create an express application
 const PORT = 3000; // port constant
 require('dotenv').config({ path: '.env' }); // import dotenv library and configure path
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+// use `prisma` in your application to read and write data in your DB
 
 app.set('view engine', 'ejs');  // set app to use ejs
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true })); // set app to use body-parser for HTTP requests
 app.use(bodyParser.json());
 
+
 // configure each route with directions for HTTP requests
+
+app.post('/users', (req, res) => {
+    const {username, password} = req.body; // get username and password from req.body
+    prisma.user.create({
+        data: {
+            username,
+            password,
+            posts: {
+                create: {
+                    title: 'My first post',
+                    body: 'Lots of really interesting stuff',
+                },
+            },
+        }
+    })
+    .then(result => {
+        res.redirect('/');
+    })
+    .catch(error => {
+        // Handle errors
+        console.error(error);
+        res.status(500).json({error: "Internal Server Error"});
+    });
+});
 
 // connect to database
 MongoClient.connect(process.env.MONGO_URI)
@@ -31,14 +59,14 @@ MongoClient.connect(process.env.MONGO_URI)
         });
 
         // handle post requests at 'users'
-        app.post('/users', (req, res) => {
-            usersCollection
-                .insertOne(req.body) // insert the request body into collection
-                .then(result => { // if inser successful redirect to root
-                    res.redirect('/');
-                }) // error handling
-                .catch(error => console.log(error));
-        });
+        // app.post('/users', (req, res) => {
+        //     usersCollection
+        //         .insertOne(req.body) // insert the request body into collection
+        //         .then(result => { // if inser successful redirect to root
+        //             res.redirect('/');
+        //         }) // error handling
+        //         .catch(error => console.log(error));
+        // });
     })
     .catch(error => console.error(error));
 
