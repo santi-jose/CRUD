@@ -5,8 +5,8 @@ const MongoClient = require('mongodb').MongoClient;
 const app = express(); // create an express application
 const PORT = 3000; // port constant
 require('dotenv').config({ path: '.env' }); // import dotenv library and configure path
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { PrismaClient } = require('@prisma/client'); // import PrismaClient
+const prisma = new PrismaClient(); // create instance of PrismaClient
 // use `prisma` in your application to read and write data in your DB
 
 app.set('view engine', 'ejs');  // set app to use ejs
