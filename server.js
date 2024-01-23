@@ -17,29 +17,29 @@ app.use(bodyParser.json());
 
 // configure each route with directions for HTTP requests
 
-app.post('/users', (req, res) => {
-    const {username, password} = req.body; // get username and password from req.body
-    prisma.user.create({
-        data: {
-            username,
-            password,
-            posts: {
-                create: {
-                    title: 'My first post',
-                    body: 'Lots of really interesting stuff',
-                },
-            },
-        }
-    })
-    .then(result => {
-        res.redirect('/');
-    })
-    .catch(error => {
-        // Handle errors
-        console.error(error);
-        res.status(500).json({error: "Internal Server Error"});
-    });
-});
+// app.post('/users', (req, res) => {
+//     const {username, password} = req.body; // get username and password from req.body
+//     prisma.user.create({
+//         data: {
+//             username,
+//             password,
+//             posts: {
+//                 create: {
+//                     title: 'My first post',
+//                     body: 'Lots of really interesting stuff',
+//                 },
+//             },
+//         }
+//     })
+//     .then(result => {
+//         res.redirect('/');
+//     })
+//     .catch(error => {
+//         // Handle errors
+//         console.error(error);
+//         res.status(500).json({error: "Internal Server Error"});
+//     });
+// });
 
 // connect to database
 MongoClient.connect(process.env.MONGO_URI)
@@ -59,14 +59,39 @@ MongoClient.connect(process.env.MONGO_URI)
         });
 
         // handle post requests at 'users'
-        // app.post('/users', (req, res) => {
-        //     usersCollection
-        //         .insertOne(req.body) // insert the request body into collection
-        //         .then(result => { // if inser successful redirect to root
-        //             res.redirect('/');
-        //         }) // error handling
-        //         .catch(error => console.log(error));
-        // });
+        app.post('/users', (req, res) => {
+            usersCollection
+                .insertOne(req.body) // insert the request body into collection
+                .then(result => { // if inser successful redirect to root
+                    res.redirect('/');
+                }) // error handling
+                .catch(error => console.log(error));
+        });
+
+        // handle put request at 'users'
+        app.put('/users', (req, res) => {
+            usersCollection
+                .findOneAndUpdate(
+                    { username: req.body.username },
+                    {
+                        $set: {
+                            username: req.body.username,
+                            password: req.body.password,
+                        },
+                    },
+                    {
+                        upsert: false,
+                    },
+                    {
+                        returnNewDocument: true
+                    }
+                )
+                .then(result => {
+                    res.json('Success');
+                    return res;
+                })
+                .catch(error => console.error(error));
+        });
     })
     .catch(error => console.error(error));
 
