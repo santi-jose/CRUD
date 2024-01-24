@@ -92,6 +92,20 @@ MongoClient.connect(process.env.MONGO_URI)
                 })
                 .catch(error => console.error(error));
         });
+
+        // handle delete requests
+        app.delete('/users', (req, res) => {
+            usersCollection
+                .deleteOne(
+                    { username: req.body.username }
+                )
+                .then(result => {
+                    console.log(`Deleted ${req.body.username}`);
+                    console.log(result);
+                    res.json('Deleted user');
+                })
+                .catch(error => console.error(error));
+        })
     })
     .catch(error => console.error(error));
 

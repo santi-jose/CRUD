@@ -1,8 +1,9 @@
 // get update button
-const update = document.getElementById('update-button');
+const updateButton = document.getElementById('update-button');
+const deleteButton = document.getElementById('delete-button');
 
 // add event listener on update button click
-update.addEventListener('click', _ => {
+updateButton.addEventListener('click', _ => {
     // store value of username and password text input
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -24,5 +25,25 @@ update.addEventListener('click', _ => {
     })
     .then(res => {
         window.location.reload(true);
+    });
+})
+
+// add event listener for delete button
+deleteButton.addEventListener('click', () => {
+    const username = document.getElementById("username").value;
+
+    fetch('/users', {
+        method: 'delete',
+        headers: {'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: username
+        }),
+    })
+    .then(res => {
+        console.log('deleted');
+        if(res.ok) return res.json();
+    })
+    .then(res => {
+        window.location.reload(true)
     });
 })
